@@ -35,10 +35,17 @@
  *   - ArduinoJson (by Benoit Blanchon)
  *   - WebSockets (by Markus Sattler / Links2004)
  *
- * 매칭 로직 (핵심):
- *   같은 폴더의 irCodes.h(본 프로젝트에서 동기화해온 사본)에 저장된
- *   IR_CODE_OFF / IR_TEMP_CODES와 지금 수신한 raw 배열을 항목별로
- *   비교해서 어떤 명령이었는지 판정한다.
+ * 매칭 로직 (핵심, 2단계):
+ *   1) 같은 폴더의 irCodes.h(본 프로젝트에서 동기화해온 사본)에 저장된
+ *      IR_CODE_OFF / IR_TEMP_CODES와 지금 수신한 raw 배열을 항목별로
+ *      비교해서 어떤 명령이었는지 판정한다(항상 먼저 시도, 최우선).
+ *   2) [추가] 1번이 실패했을 때만 보조로, 수신 신호가 IRremoteESP8266의
+ *      NEC 프로토콜로 디코딩됐는지 확인한다. 본 프로젝트 송신부가
+ *      irCodes.h를 아직 캡처하지 못했을 때 임시로 NEC 인코딩(주소=전원,
+ *      명령=목표온도)을 보내도록 되어 있어서, 그 신호를 여기서 그대로
+ *      해석한다. irCodes.h가 채워지면 1번에서 항상 먼저 성공하므로
+ *      이 경로는 실행되지 않는다 - 실제 리모컨 신호 인식 기능과는
+ *      완전히 분리된 보조 경로다.
  *
  * 신뢰성 확보: 판정 결과만 보내지 않고 raw 배열도 그대로 같이
  * 전송해서, 프론트엔드가 "원본 데이터 → 해석 결과"를 나란히
@@ -94,9 +101,10 @@ bool wifiReconnecting = false;
 
 // ---------------- 매칭 결과 ----------------
 struct MatchResult {
-  bool found;   // irCodes.h에 있는 값 중 하나와 일치했는가
+  bool found;   // irCodes.h 매칭 또는 NEC 폴백 해석으로 판정에 성공했는가
   bool isOn;    // found==true일 때만 유효 (true=ON, false=OFF)
   int  tempC;   // found==true && isOn==true일 때만 유효
+  bool viaNec;  // true면 raw 매칭이 아니라 NEC 폴백 해석으로 판정됨 (로그 구분용)
 };
 
 // ============================================================
@@ -108,6 +116,7 @@ void webSocketEvent(WStype_t type, uint8_t* payload, size_t length);
 bool rawArraysMatch(const uint16_t* received, uint16_t receivedLen,
                      const uint16_t* known, uint16_t knownLen);
 MatchResult matchAgainstKnownCodes(const uint16_t* raw, uint16_t rawLen);
+MatchResult matchNecFallback(const decode_results& res);
 void handleCapturedSignal();
 void sendMockAirconState(const MatchResult& match, const uint16_t* raw, uint16_t rawLen);
 
@@ -222,7 +231,7 @@ bool rawArraysMatch(const uint16_t* received, uint16_t receivedLen,
 // (판정 불가 - UNKNOWN)를 반환한다.
 // ------------------------------------------------------------
 MatchResult matchAgainstKnownCodes(const uint16_t* raw, uint16_t rawLen) {
-  MatchResult result = { false, false, 0 };
+  MatchResult result = { false, false, 0, false };
 
   if (IR_CODE_OFF_LEN > 0 && rawArraysMatch(raw, rawLen, IR_CODE_OFF, IR_CODE_OFF_LEN)) {
     result.found = true;
@@ -246,6 +255,28 @@ MatchResult matchAgainstKnownCodes(const uint16_t* raw, uint16_t rawLen) {
 }
 
 // ------------------------------------------------------------
+// [추가] NEC 폴백 해석 - matchAgainstKnownCodes()가 실패했을 때만
+// handleCapturedSignal()에서 보조로 호출된다. 본 프로젝트 송신부가
+// irCodes.h 미캡처 상태에서 irsend.encodeNEC(power, targetTemp)로
+// 보내는 신호를 그대로 되돌려 해석한다 - address가 전원(0/1),
+// command가 목표 온도(16~30)다. 실제 리모컨 raw 매칭 로직은 전혀
+// 건드리지 않는 완전히 별개의 경로.
+// ------------------------------------------------------------
+MatchResult matchNecFallback(const decode_results& res) {
+  MatchResult result = { false, false, 0, false };
+
+  if (res.decode_type != decode_type_t::NEC) return result;
+
+  result.found  = true;
+  result.viaNec = true;
+  result.isOn   = (res.address == 1);
+  if (result.isOn) {
+    result.tempC = static_cast<int>(res.command);
+  }
+  return result;
+}
+
+// ------------------------------------------------------------
 // IRrecv가 신호 하나를 캡처했을 때 호출된다. raw 배열을 뽑아
 // 판정하고, 판정 결과 + raw 배열을 그대로 서버로 전송한다.
 // ------------------------------------------------------------
@@ -258,15 +289,19 @@ void handleCapturedSignal() {
   }
 
   MatchResult match = matchAgainstKnownCodes(raw, rawLen);
+  if (!match.found) {
+    match = matchNecFallback(results);  // raw 매칭 실패 시에만 보조로 시도
+  }
 
   if (match.found) {
+    const char* via = match.viaNec ? "NEC 폴백" : "raw 매칭";
     if (match.isOn) {
-      Serial.printf("[Mock-Aircon] 판정: ON, %d C (길이 %d)\n", match.tempC, rawLen);
+      Serial.printf("[Mock-Aircon] 판정: ON, %d C (%s, 길이 %d)\n", match.tempC, via, rawLen);
     } else {
-      Serial.printf("[Mock-Aircon] 판정: OFF (길이 %d)\n", rawLen);
+      Serial.printf("[Mock-Aircon] 판정: OFF (%s, 길이 %d)\n", via, rawLen);
     }
   } else {
-    Serial.printf("[Mock-Aircon] 판정: UNKNOWN - irCodes.h의 캡처값과 불일치 (길이 %d)\n", rawLen);
+    Serial.printf("[Mock-Aircon] 판정: UNKNOWN - irCodes.h 매칭 실패 + NEC 디코딩도 아님 (길이 %d)\n", rawLen);
   }
 
   sendMockAirconState(match, raw, rawLen);
