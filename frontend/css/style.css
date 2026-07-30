@@ -1,0 +1,115 @@
+/* ============================================================
+   파일 경로: frontend/css/style.css
+   ------------------------------------------------------------
+   esp32-env-power-dashboard의 style.css에서 이 페이지가 실제로 쓰는
+   클래스만 뽑아온 것이다(토글 스위치, 슬라이더 등 미사용 클래스 제외).
+   ============================================================ */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 20px 32px;
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
+}
+
+.dashboard-header h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.mock-aircon-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.stat-card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.stat-card.highlight {
+  background: linear-gradient(135deg, #1e3a8a, #1e293b);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.stat-sub {
+  font-size: 0.8rem;
+  color: #60a5fa;
+}
+
+.mock-display { text-align: center; padding: 40px 20px; }
+.mock-temp-big { font-size: 4rem; font-weight: 700; margin: 8px 0; }
+
+.mock-raw-box {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  max-height: 200px;
+  overflow-y: auto;
+  word-break: break-all;
+  margin-top: 16px;
+}
+
+.chart-card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  margin-top: 16px;
+}
+
+.chart-card h2 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #cbd5e1;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 1rem;
+  background: #334155;
+  color: #94a3b8;
+}
+
+.badge.on { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.badge.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+.badge.unknown { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+
+@media (max-width: 640px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .mock-aircon-page {
+    padding: 16px;
+  }
+}

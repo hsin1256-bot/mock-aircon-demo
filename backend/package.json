@@ -1,0 +1,14 @@
+{
+  "name": "mock-aircon-demo-backend",
+  "version": "1.0.0",
+  "description": "실제 에어컨이 없는 시연을 위한 모의 에어컨 수신 판정 결과 서버 (esp32-env-power-dashboard와 무관하게 단독 실행 가능한 독립 프로젝트)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ws": "^8.21.1"
+  }
+}

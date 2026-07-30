@@ -1,0 +1,12 @@
+# 펌웨어 개인 시크릿 (Wi-Fi / 서버 URL / 디바이스 토큰) - 절대 커밋 금지
+firmware/mock_aircon_receiver/secrets.h
+
+# 백엔드 환경변수 - 절대 커밋 금지
+backend/.env
+
+# Node
+backend/node_modules/
+
+# OS / 에디터 캐시 파일
+.DS_Store
+Thumbs.db

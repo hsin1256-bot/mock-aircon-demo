@@ -1,0 +1,46 @@
+<!--
+  ============================================================
+  파일 경로: frontend/mock-aircon.html
+  ------------------------------------------------------------
+  실제 에어컨이 없는 시연 장소용 모의 에어컨 화면. 이 프로젝트 자체의
+  독립 백엔드(backend/server.js)가 노출하는 GET /api/mock-aircon을
+  2초마다 폴링해서 보여준다. raw 데이터를 그대로 노출하는 이유는
+  "판정 결과가 소프트웨어로 조작된 게 아니다"라는 걸 증명하기 위함이다.
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>모의 에어컨 - IR 수신 판정 결과</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="dashboard-header">
+    <h1>모의 에어컨 (Mock Aircon)</h1>
+  </header>
+
+  <main class="mock-aircon-page">
+    <section class="stat-card highlight mock-display">
+      <span class="stat-label">현재 판정 상태</span>
+      <div style="margin: 14px 0;">
+        <span id="mock-badge" class="badge" style="font-size:1rem;"><span id="mock-status">대기 중</span></span>
+      </div>
+      <div class="mock-temp-big"><span id="mock-temp">--</span></div>
+      <span id="mock-updated" class="stat-sub">마지막 수신: -</span>
+    </section>
+
+    <section class="chart-card">
+      <h2>원본 IR 타이밍 데이터 (raw)</h2>
+      <p style="color:#94a3b8; font-size:0.85rem; margin:0 0 8px;">
+        아래 값은 수신 보드가 실제로 캡처한 신호 그대로다 — 판정 결과가
+        소프트웨어로 조작된 게 아니라는 걸 이 원본 데이터로 직접 확인할 수 있다.
+      </p>
+      <div id="mock-raw" class="mock-raw-box">(아직 수신된 신호 없음)</div>
+    </section>
+  </main>
+
+<script src="js/mock-aircon.js"></script>
+</body>
+</html>
