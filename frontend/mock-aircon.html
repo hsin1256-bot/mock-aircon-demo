@@ -14,11 +14,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>모의 에어컨 - IR 수신 판정 결과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Alex+Brush&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="dashboard-header">
-    <h1>모의 에어컨 (Mock Aircon)</h1>
+    <div class="header-titles">
+      <span class="header-kicker">Smart Home</span>
+      <h1>모의 에어컨<br>IR 수신 판정 결과</h1>
+    </div>
   </header>
 
   <main class="mock-aircon-page">
@@ -33,7 +39,7 @@
 
     <section class="chart-card">
       <h2>원본 IR 타이밍 데이터 (raw)</h2>
-      <p style="color:#94a3b8; font-size:0.85rem; margin:0 0 8px;">
+      <p class="mock-raw-desc">
         아래 값은 수신 보드가 실제로 캡처한 신호 그대로다 — 판정 결과가
         소프트웨어로 조작된 게 아니라는 걸 이 원본 데이터로 직접 확인할 수 있다.
       </p>

@@ -1,115 +1,181 @@
 /* ============================================================
    파일 경로: frontend/css/style.css
    ------------------------------------------------------------
-   esp32-env-power-dashboard의 style.css에서 이 페이지가 실제로 쓰는
-   클래스만 뽑아온 것이다(토글 스위치, 슬라이더 등 미사용 클래스 제외).
+   esp32-env-power-dashboard의 리디자인(v11, 하늘+구름 글래스모피즘)
+   스타일을 이 페이지가 실제로 쓰는 클래스에 맞춰 그대로 이식한 것이다.
    ============================================================ */
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
+  min-height: 100vh;
+  font-family: 'Poppins', 'Segoe UI', 'Malgun Gothic', sans-serif;
+  color: #ffffff;
+  background:
+    radial-gradient(ellipse 55% 30% at 10% 100%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 70%),
+    radial-gradient(ellipse 45% 25% at 40% 100%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 70%),
+    radial-gradient(ellipse 50% 28% at 75% 100%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 70%),
+    radial-gradient(ellipse 60% 30% at 100% 100%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%),
+    linear-gradient(180deg, #1c4e8c 0%, #2f6cb8 25%, #5c95d6 55%, #a9cdec 85%, #dcedfa 100%);
+  background-attachment: fixed;
 }
 
+/* ---------------- 헤더: 필기체 키커 + 굵은 헤드라인 ---------------- */
 .dashboard-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   flex-wrap: wrap;
-  padding: 20px 32px;
-  background: #111827;
-  border-bottom: 1px solid #1f2937;
+  gap: 12px;
+  padding: 56px 32px 40px;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.header-kicker {
+  font-family: 'Alex Brush', cursive;
+  font-size: 2.1rem;
+  line-height: 1;
+  color: #ffffff;
+  margin-bottom: 2px;
+  text-shadow: 0 2px 10px rgba(10, 40, 80, 0.35);
 }
 
 .dashboard-header h1 {
-  font-size: 1.4rem;
   margin: 0;
+  font-family: 'Black Han Sans', 'Malgun Gothic', sans-serif;
+  font-weight: 400;
+  font-size: 1.7rem;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(10, 40, 80, 0.4);
 }
 
 .mock-aircon-page {
   max-width: 640px;
   margin: 0 auto;
-  padding: 32px 20px;
-}
-
-.stat-card {
-  background: #1e293b;
-  border-radius: 12px;
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  gap: 16px;
+  padding: 8px 32px 56px;
+}
+
+/* ---------------- 통계 카드: 하늘 위 유리판(glass) ---------------- */
+.stat-card {
+  background: rgba(255,255,255,0.16);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 16px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(10, 40, 80, 0.18);
 }
 
 .stat-card.highlight {
-  background: linear-gradient(135deg, #1e3a8a, #1e293b);
+  background: rgba(255,255,255,0.26);
+  border-color: rgba(255,255,255,0.5);
 }
 
 .stat-label {
-  font-size: 0.85rem;
-  color: #94a3b8;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
 }
 
 .stat-sub {
-  font-size: 0.8rem;
-  color: #60a5fa;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.85);
 }
 
-.mock-display { text-align: center; padding: 40px 20px; }
-.mock-temp-big { font-size: 4rem; font-weight: 700; margin: 8px 0; }
+.mock-display { padding: 40px 20px; }
 
-.mock-raw-box {
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  padding: 16px;
-  font-family: monospace;
-  font-size: 0.82rem;
-  color: #94a3b8;
-  max-height: 200px;
-  overflow-y: auto;
-  word-break: break-all;
-  margin-top: 16px;
+.mock-temp-big {
+  font-family: 'Black Han Sans', 'Malgun Gothic', sans-serif;
+  font-weight: 400;
+  font-size: 4rem;
+  line-height: 1;
+  margin: 8px 0;
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(10, 40, 80, 0.35);
 }
 
+/* ---------------- raw 데이터 카드: 흰 유리판 + 어두운 글자(가독성 우선) ---------------- */
 .chart-card {
-  background: #1e293b;
-  border-radius: 12px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  margin-top: 16px;
+  box-shadow: 0 8px 24px rgba(10, 40, 80, 0.18);
+  color: #26364a;
 }
 
 .chart-card h2 {
   margin: 0 0 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
   font-size: 1rem;
-  color: #cbd5e1;
+  color: #2a4f7c;
 }
 
+.mock-raw-desc {
+  color: #55627a;
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+}
+
+.mock-raw-box {
+  background: rgba(10, 40, 80, 0.05);
+  border: 1px solid rgba(10, 40, 80, 0.12);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.82rem;
+  color: #45526b;
+  max-height: 200px;
+  overflow-y: auto;
+  word-break: break-all;
+}
+
+/* ---------------- 에어컨 상태 배지 ---------------- */
 .badge {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 1rem;
-  background: #334155;
-  color: #94a3b8;
+  background: rgba(255,255,255,0.25);
+  color: #ffffff;
 }
 
-.badge.on { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-.badge.off { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
-.badge.unknown { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+.badge.on { background: rgba(74, 222, 128, 0.3); color: #ffffff; }
+.badge.off { background: rgba(255,255,255,0.2); color: rgba(255,255,255,0.9); }
+.badge.unknown { background: rgba(250, 204, 21, 0.3); color: #ffffff; }
 
 @media (max-width: 640px) {
   .dashboard-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 10px;
+    padding: 44px 20px 32px;
   }
   .mock-aircon-page {
-    padding: 16px;
+    padding: 8px 16px 40px;
   }
 }
